@@ -3,8 +3,8 @@
 
 module Task3 where
 
-import Task2 (Stream)
-import Data.Ratio (Ratio)
+import Task2 (Stream (Stream), fromList)
+import Data.Ratio (Ratio, numerator)
 
 -- | Power series represented as infinite stream of coefficients
 -- 
@@ -40,7 +40,38 @@ newtype Series a = Series
 -- [0,1,0,0,0,0,0,0,0,0]
 --
 x :: Num a => Series a
-x = error "TODO: define x"
+x = Series (Stream 0 (Stream 1 (fromList 0 [])))
+
+streamZipWith :: (a -> b -> c) -> Stream a -> Stream b -> Stream c
+streamZipWith f (Stream a as) (Stream b bs) = Stream (f a b) (streamZipWith f as bs)
+
+
+instance Num a => Num (Series a) where
+  fromInteger n = Series (Stream (fromInteger n) (fromList 0 []))
+
+  negate (Series s) = Series (fmap negate s)
+
+  Series a + Series b = Series (streamZipWith (+) a b)
+
+  (Series (Stream a0 a')) * b@(Series (Stream b0 b')) =
+    Series (Stream (a0 * b0)
+      (coefficients (a0 *: Series b' + Series a' * b)))
+
+
+
+  abs s = s
+  signum _ = 1
+
+
+instance Fractional a => Fractional (Series a) where
+  fromRational r = Series (Stream (fromRational r) (fromList 0 []))
+
+  Series (Stream a0 a') / b@(Series (Stream b0 b')) =
+    Series (Stream q0
+      (coefficients ((Series a' - q0 *: Series b') / b)))
+    where
+      q0 = a0 / b0
+
 
 -- | Multiplies power series by given number
 -- 
@@ -58,7 +89,7 @@ x = error "TODO: define x"
 --
 infixl 7 *:
 (*:) :: Num a => a -> Series a -> Series a
-(*:) = error "TODO: define (*:)"
+(*:) a (Series coeffs) = Series (fmap (a*) coeffs)
 
 -- | Helper function for producing integer
 -- coefficients from generating function
@@ -70,7 +101,7 @@ infixl 7 *:
 -- [2,3,0,0,0,0,0,0,0,0]
 --
 gen :: Series (Ratio Integer) -> Stream Integer
-gen = error "TODO: define gen"
+gen (Series coeffs) = fmap numerator coeffs
 
 -- | Returns infinite stream of ones
 --
@@ -80,7 +111,8 @@ gen = error "TODO: define gen"
 -- [1,1,1,1,1,1,1,1,1,1]
 --
 ones :: Stream Integer
-ones = error "TODO: define ones"
+ones = gen (1 / (1 - x))
+
 
 -- | Returns infinite stream of natural numbers (excluding zero)
 --
@@ -90,7 +122,7 @@ ones = error "TODO: define ones"
 -- [1,2,3,4,5,6,7,8,9,10]
 --
 nats :: Stream Integer
-nats = error "TODO: define nats (Task3)"
+nats = gen (1 / ((1 - x) * (1 - x)))
 
 -- | Returns infinite stream of fibonacci numbers (starting with zero)
 --
@@ -100,5 +132,5 @@ nats = error "TODO: define nats (Task3)"
 -- [0,1,1,2,3,5,8,13,21,34]
 --
 fibs :: Stream Integer
-fibs = error "TODO: define fibs (Task3)"
+fibs = gen (x / (1 - x - x * x))
 

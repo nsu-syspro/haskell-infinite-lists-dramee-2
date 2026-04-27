@@ -2,6 +2,7 @@
 -- The above pragma enables all warnings
 
 module Task1 where
+import Data.List (unfoldr)
 
 -- | Returns infinite list of natural numbers (excluding zero)
 --
@@ -11,7 +12,7 @@ module Task1 where
 -- [1,2,3,4,5,6,7,8,9,10]
 --
 nats :: [Integer]
-nats = error "TODO: define nats (Task1)"
+nats = [1..]
 
 -- | Returns infinite list of fibonacci numbers (starting with zero)
 --
@@ -21,7 +22,8 @@ nats = error "TODO: define nats (Task1)"
 -- [0,1,1,2,3,5,8,13,21,34]
 --
 fibs :: [Integer]
-fibs = error "TODO: define fibs (Task1)"
+fibs = 0 : 1 : zipWith (+) fibs (drop 1 fibs)
+
 
 -- | Returns infinite list of prime numbers
 --
@@ -31,7 +33,7 @@ fibs = error "TODO: define fibs (Task1)"
 -- [2,3,5,7,11,13,17,19,23,29]
 --
 primes :: [Integer]
-primes = error "TODO: define primes (Task1)"
+primes = unfoldr sieve [2..]
 
 -- | One step of Sieve of Eratosthenes
 -- (to be used with 'unfoldr')
@@ -48,4 +50,5 @@ primes = error "TODO: define primes (Task1)"
 -- Just (3,[5,7,11,13,17,19])
 --
 sieve :: [Integer] -> Maybe (Integer, [Integer])
-sieve = error "TODO: define sieve (Task1)"
+sieve [] = Nothing
+sieve (p:ps) = Just (p, [n | n <- ps, n `mod` p /= 0])
