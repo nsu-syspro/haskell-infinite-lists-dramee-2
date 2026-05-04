@@ -7,7 +7,7 @@ module Task2 where
 data Stream a = Stream a (Stream a)
 
 instance Foldable Stream where
-  foldMap f (Stream x xs) = f x `mappend` foldMap f xs
+  foldMap f (Stream x xs) = f x <> foldMap f xs
 
 instance Functor Stream where
   fmap f (Stream x xs) = Stream (f x) (fmap f xs)

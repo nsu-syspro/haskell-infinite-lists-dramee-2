@@ -12,7 +12,7 @@ import Data.List (unfoldr)
 -- [1,2,3,4,5,6,7,8,9,10]
 --
 nats :: [Integer]
-nats = [1..]
+nats = unfoldr (\x -> Just (x, x + 1)) 1
 
 -- | Returns infinite list of fibonacci numbers (starting with zero)
 --
