@@ -22,7 +22,7 @@ nats = unfoldr (\x -> Just (x, x + 1)) 1
 -- [0,1,1,2,3,5,8,13,21,34]
 --
 fibs :: [Integer]
-fibs = 0 : 1 : zipWith (+) fibs (drop 1 fibs)
+fibs = unfoldr (\(a, b) -> Just (a, (b, a + b))) (0, 1)
 
 
 -- | Returns infinite list of prime numbers
